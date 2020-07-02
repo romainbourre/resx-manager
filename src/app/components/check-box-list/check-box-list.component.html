@@ -1,0 +1,32 @@
+<!--<div class="form-check form-check-inline" *ngFor="let item of items; let index = index">
+  <input class="form-check-input" type="checkbox" id="check-{{item.key}}" [formControl]="item.control">
+  <label class="form-check-label" for="check-{{item.key}}">
+    {{item.name}}
+  </label>
+</div>-->
+
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+          aria-haspopup="false" aria-expanded="false">
+    Keys filter
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <form class="pl-2 pr-2">
+      <div class="form-group">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="item-all" [formControl]="all" (change)="onAllChange()">
+          <label class="form-check-label user-select-none" for="item-all">
+            All
+          </label>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="form-check" *ngFor="let item of items; let index = index">
+          <input type="checkbox" class="form-check-input" id="item-{{index}}" [formControl]="itemsControls[index]" (change)="onKeyChange()">
+          <label class="form-check-label user-select-none" for="item-{{index}}">
+            {{item}}
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

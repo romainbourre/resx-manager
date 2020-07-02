@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-12 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="text-warning" *ngIf="!isAvailableTranslateService()">
+          <span class="material-icons float-left mr-2">warning</span>
+          Your google key is not set. Please go to configuration page to set it.
+        </div>
+
+        <form class="form-inline" *ngIf="isAvailableTranslateService()">
+          <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Choose targeted language</label>
+          <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" [formControl]="selectedLanguage"
+                  [ngClass]="{'disabled': loadingTranslation}">
+            <option disabled selected value="null">Choose...</option>
+            <option *ngFor="let language of availableLanguages" value="{{language}}">{{language}}</option>
+          </select>
+
+          <button type="submit" class="btn btn-primary my-1 mr-1"
+                  [ngClass]="{'disabled': !resource || !selectedLanguage.value || loadingTranslation}"
+                  (click)="translateEdited()">Translate
+          </button>
+
+          <span class="text-warning ml-2" *ngIf="awaitTranslation">
+              <span class="material-icons float-left mr-2">warning</span>
+              An error occurred while translating. Check your Google credit.
+            </span>
+        </form>
+
+        <div class="progress mt-2" *ngIf="loadingTranslation || awaitTranslation">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+               [ngClass]="{'bg-warning': awaitTranslation}" [ngStyle]="{width: translatedPercent + '%'}"
+               [attr.aria-valuenow]="translatedPercent" aria-valuemin="0" aria-valuemax="100">
+            {{translatedPercent + '%'}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

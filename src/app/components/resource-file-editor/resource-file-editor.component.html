@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col-12">
+
+    <app-translator-editor [resource]="resource"></app-translator-editor>
+
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="d-inline-block">
+          <app-check-box-list class="d-inline-block mr-2" *ngIf="availableFilters" [items]="availableFilters"
+                              (selected)="onFilterChange($event)"></app-check-box-list>
+
+          <button class="d-inline-block btn btn-primary my-1 mr-2" [ngClass]="{'disabled': !edited || await}"
+                  (click)="exportEdited()">Export
+          </button>
+
+          <button class="d-inline-block btn btn-danger my-1 mr-2" [ngClass]="{'disabled': await}"
+                  (click)="reset()">Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5 mb-5" *ngIf="!filteredKey || filteredKey.length <= 0">
+      <div class="col-12">
+        <h1 class="text-secondary text-center">No keys found. Check your filters to ensure that is show what you want.</h1>
+      </div>
+    </div>
+
+    <div class="row mb-5" *ngIf="!!filteredKey">
+      <div class="col-4">
+        <div class="list-group" id="list-tab" role="tablist">
+          <a class="list-group-item list-group-item-action text-truncate"
+             [ngClass]="{'text-success success': key.translated, 'active': index === 0}"
+             id="list-{{key.name}}"
+             data-toggle="list"
+             href="#content-{{key.name}}"
+             role="tab"
+             aria-controls="home" *ngFor="let key of filteredKey; let index = index">{{key.name}}</a>
+        </div>
+      </div>
+      <div class="col-8">
+        <div data-spy="scroll" data-target="#list-tab" data-offset="0" class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show" id="content-{{key.name}}" role="tabpanel" aria-labelledby="list-home-list"
+               [ngClass]="{'active': index === 0}"
+               *ngFor="let key of filteredKey; let index = index">
+
+            <div class="row mb-5">
+              <div class="col-12">
+                <h3 class="text-truncate"><span *ngIf="key.translated"
+                                                class="badge badge-success">Translated</span>{{key.name}}</h3>
+              </div>
+            </div>
+
+            <p class="mb-4">
+              <strong>original: </strong>
+              <i>{{resource.content[key.name]}}</i>
+            </p>
+
+            <div class="form-group" *ngIf="edited">
+              <label for="translated_{{key.name}}"><strong>Edited value</strong></label>
+              <textarea class="form-control" id="translated_{{key.name}}" [formControl]="edited[key.name]"
+                        rows="3"></textarea>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

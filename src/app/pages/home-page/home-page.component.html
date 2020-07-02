@@ -1,0 +1,21 @@
+<a routerLink="/configuration" class="material-icons position-absolute m-2 text-decoration-none text-secondary" style="right: 0">settings</a>
+
+<app-resource-file-importer (imported)="onFileImported($event)"></app-resource-file-importer>
+
+<div class="container" *ngIf="!importedResource">
+  <div class="row mt-5">
+    <div class="col-12">
+      <h1 class="text-center text-secondary">No resource file yet imported.</h1>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" *ngIf="initializedResource">
+  <div class="row">
+    <div class="col-12">
+      <p><strong>{{totalKeysNumber}} keys found!</strong></p>
+    </div>
+  </div>
+
+  <app-resource-file-editor [resource]="initializedResource"></app-resource-file-editor>
+</div>

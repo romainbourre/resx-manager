@@ -1,0 +1,30 @@
+<div class="jumbotron">
+  <h1 class="display-4">Welcome to RESX manager!</h1>
+  <p class="lead">This is a simple application to manage your resource file. You can easily import, select keys,
+    translate and export.</p>
+  <hr class="my-4">
+  <p>To start, please import your resource file.</p>
+
+  <form class="form-inline">
+    <div class="input-group my-1 mr-sm-2">
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" id="customFile" (change)="onFileImported($event)"
+               [disabled]="loading || importingFile">
+        <label class="custom-file-label justify-content-start"
+               [ngClass]="{'label-success': importedFile && !importingFile}"
+               for="customFile">
+          <div class="spinner-border spinner-border-sm" role="status" *ngIf="importingFile">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <span *ngIf="!importingFile && !importedFile">Choose your resource file</span>
+          <span *ngIf="!importingFile && importedFile">{{importedFile.name}}</span>
+        </label>
+      </div>
+    </div>
+  </form>
+
+  <div class="text-warning mt-2" *ngIf="!importingFile && errorWhenImporting">
+    <span class="material-icons float-left mr-2">warning</span>
+    An error occurred while importing file. Please try again.
+  </div>
+</div>
