@@ -49,11 +49,14 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
         comment: this.editedComments[k.name].value
       };
     });
-    console.log(typeof final, final);
     resx.js2resx(final, (error, res) => {
       const blob = new Blob([res], {type: 'text/plain;charset=utf-8'});
       const now = new Date();
-      saveAs(blob, `${now.getFullYear()}${now.getMonth()}${now.getDate()}_StringLibrary.resx`);
+      const year = now.getFullYear();
+      const month = ('0' + (now.getMonth() + 1)).slice(-2);
+      const day = ('0' + now.getDate()).slice(-2);
+      const fileName = `${year}${month}${day}_StringLibrary.resx`;
+      saveAs(blob, fileName);
     });
   }
 
