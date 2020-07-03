@@ -3,9 +3,10 @@ import {FormBuilder, FormControl} from '@angular/forms';
 import {Observable, of} from 'rxjs';
 import {GoogleTranslateService} from '../../services/google-translate/google-translate.service';
 import {concatMap, finalize} from 'rxjs/operators';
-import {InitializedResource, Key} from '../../pages/home-page/home-page.component';
+import {Key} from '../../pages/home-page/home-page.component';
 import {GoogleTranslateRequest} from '../../services/google-translate/models/google-translate-request.model';
 import {GoogleTranslateResponse} from '../../services/google-translate/models/google-translate-response.model';
+import {EditedResource} from '../resource-file-editor/resource-file-editor.component';
 
 @Component({
   selector: 'app-translator-editor',
@@ -13,7 +14,7 @@ import {GoogleTranslateResponse} from '../../services/google-translate/models/go
   styleUrls: ['./translator-editor.component.scss']
 })
 export class TranslatorEditorComponent implements OnInit {
-  @Input() resource: InitializedResource;
+  @Input() resource: EditedResource;
 
   availableLanguages: string[] = [];
   selectedLanguage: FormControl = this.fb.control(null);
@@ -49,7 +50,9 @@ export class TranslatorEditorComponent implements OnInit {
         concatMap((req: GoogleTranslateRequest) => this.googleTranslateService.translate(req)),
         finalize(() => this.loadingTranslation = false))
       .subscribe((data: GoogleTranslateResponse) => {
-        this.resource.content[data.key.name].setValue(data.result.data.translations[0].translatedText);
+        const content = this.resource.content[data.key.name];
+        content.value.setValue(data.result.data.translations[0].translatedText);
+        content.comment.setValue(data.result.data.translations[1].translatedText);
         data.key.translated = true;
       }, _ => {
         this.awaitTranslation = true;
@@ -81,10 +84,13 @@ export class TranslatorEditorComponent implements OnInit {
 
   private generateTranslateRequests(keys: Key[]): Observable<GoogleTranslateRequest> {
     return of(...keys.map(k => {
+      const content = this.resource.content[k.name];
+      const value = content.value.value;
+      const comment = content.comment.value;
       return {
         key: k,
         obj: {
-          q: [this.resource.content[k.name].value],
+          q: [value ? value : '', comment ? comment : ''],
           target: this.selectedLanguage.value
         }
       };

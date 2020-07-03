@@ -1,9 +1,17 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {FormBuilder, FormControl} from '@angular/forms';
 import {InitializedResource, Key} from '../../pages/home-page/home-page.component';
 import resx from 'resx';
 import {saveAs} from 'file-saver';
 
+
+export interface EditedResource {
+  keys: Key[];
+  content: {
+    value: FormControl;
+    comment: FormControl;
+  }[];
+}
 
 @Component({
   selector: 'app-resource-file-editor',
@@ -14,10 +22,8 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
   @Input() resource: InitializedResource;
   @Input() await: boolean;
 
-  editedValues: object;
-  editedComments: object;
+  editedResource: EditedResource;
   availableFilters: string[];
-  filteredKey: Key[];
 
   constructor(private fb: FormBuilder) { }
 
@@ -31,22 +37,23 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
   }
 
   onFilterChange(keys: string[]) {
-    this.filteredKey = this.resource.keys.filter(k => {
+    this.editedResource.keys = this.resource.keys.filter(k => {
       const key = k.name.split('_')[0];
       return !!keys.find(i => i === key);
     });
   }
 
   exportEdited(): void {
-    if (!this.editedValues || this.await) {
+    if (!this.editedResource || this.await) {
       return;
     }
 
     const final: object = [];
-    this.filteredKey.forEach((k: Key) => {
+    this.editedResource.keys.forEach((k: Key) => {
+      const content = this.editedResource.content[k.name];
       final[k.name] = {
-        value: this.editedValues[k.name].value,
-        comment: this.editedComments[k.name].value
+        value: content.value.value,
+        comment: content.comment.value
       };
     });
     resx.js2resx(final, (error, res) => {
@@ -69,20 +76,21 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
       return;
     }
 
-    const copyOfValues = [];
-    const copyOfComments = [];
+    const edition: EditedResource = {
+      keys: this.resource.keys,
+      content: []
+    };
     this.resource.keys.forEach((k: Key) => {
-      copyOfValues[k.name] = this.fb.control(this.resource.content[k.name].value);
-      copyOfComments[k.name] = this.fb.control(this.resource.content[k.name].comment);
+      edition.content[k.name] = {
+        value: this.fb.control(this.resource.content[k.name].value),
+        comment: this.fb.control(this.resource.content[k.name].comment)
+      };
     });
 
-    this.filteredKey = this.resource.keys;
-    this.editedValues = copyOfValues;
-    this.editedComments = copyOfComments;
+    this.editedResource = edition;
   }
 
   private initFilter(): void {
-    this.filteredKey = this.resource.keys;
     this.availableFilters = [];
     this.resource.keys.map(k => {
       const key = k.name.split('_')[0];
