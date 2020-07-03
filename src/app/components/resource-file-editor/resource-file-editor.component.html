@@ -9,7 +9,7 @@
           <app-check-box-list class="d-inline-block mr-2" *ngIf="availableFilters" [items]="availableFilters"
                               (selected)="onFilterChange($event)"></app-check-box-list>
 
-          <button class="d-inline-block btn btn-primary my-1 mr-2" [ngClass]="{'disabled': !edited || await}"
+          <button class="d-inline-block btn btn-primary my-1 mr-2" [ngClass]="{'disabled': !editedValues || await}"
                   (click)="exportEdited()">Export
           </button>
 
@@ -22,7 +22,8 @@
 
     <div class="row mt-5 mb-5" *ngIf="!filteredKey || filteredKey.length <= 0">
       <div class="col-12">
-        <h1 class="text-secondary text-center">No keys found. Check your filters to ensure that is show what you want.</h1>
+        <h1 class="text-secondary text-center">No keys found. Check your filters to ensure that is show what you
+          want.</h1>
       </div>
     </div>
 
@@ -51,14 +52,26 @@
               </div>
             </div>
 
-            <p class="mb-4">
-              <strong>original: </strong>
-              <i>{{resource.content[key.name]}}</i>
-            </p>
+            <div class="mb-4">
+              <p>
+                <strong>original value: </strong>
+                <i>{{resource.content[key.name].value}}</i>
+              </p>
+              <p>
+                <strong>original comment: </strong>
+                <i>{{resource.content[key.name].comment}}</i>
+              </p>
+            </div>
 
-            <div class="form-group" *ngIf="edited">
-              <label for="translated_{{key.name}}"><strong>Edited value</strong></label>
-              <textarea class="form-control" id="translated_{{key.name}}" [formControl]="edited[key.name]"
+            <div class="form-group" *ngIf="editedValues">
+              <label for="translated_value_{{key.name}}"><strong>Edited value</strong></label>
+              <textarea class="form-control" id="translated_value_{{key.name}}" [formControl]="editedValues[key.name]"
+                        rows="3"></textarea>
+            </div>
+
+            <div class="form-group" *ngIf="editedValues">
+              <label for="translated_comment_{{key.name}}"><strong>Edited comment</strong></label>
+              <textarea class="form-control" id="translated_comment_{{key.name}}" [formControl]="editedComments[key.name]"
                         rows="3"></textarea>
             </div>
 

@@ -14,7 +14,8 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
   @Input() resource: InitializedResource;
   @Input() await: boolean;
 
-  edited: object;
+  editedValues: object;
+  editedComments: object;
   availableFilters: string[];
   filteredKey: Key[];
 
@@ -37,14 +38,18 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
   }
 
   exportEdited(): void {
-    if (!this.edited || this.await) {
+    if (!this.editedValues || this.await) {
       return;
     }
 
-    const final = [];
+    const final: object = [];
     this.filteredKey.forEach((k: Key) => {
-      final[k.name] = this.edited[k.name].value;
+      final[k.name] = {
+        value: this.editedValues[k.name].value,
+        comment: this.editedComments[k.name].value
+      };
     });
+    console.log(typeof final, final);
     resx.js2resx(final, (error, res) => {
       const blob = new Blob([res], {type: 'text/plain;charset=utf-8'});
       const now = new Date();
@@ -61,13 +66,16 @@ export class ResourceFileEditorComponent implements OnInit, OnChanges {
       return;
     }
 
-    const copy = [];
+    const copyOfValues = [];
+    const copyOfComments = [];
     this.resource.keys.forEach((k: Key) => {
-      copy[k.name] = this.fb.control(this.resource.content[k.name]);
+      copyOfValues[k.name] = this.fb.control(this.resource.content[k.name].value);
+      copyOfComments[k.name] = this.fb.control(this.resource.content[k.name].comment);
     });
 
     this.filteredKey = this.resource.keys;
-    this.edited = copy;
+    this.editedValues = copyOfValues;
+    this.editedComments = copyOfComments;
   }
 
   private initFilter(): void {

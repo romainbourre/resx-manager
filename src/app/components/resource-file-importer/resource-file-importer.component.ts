@@ -39,7 +39,7 @@ export class ResourceFileImporterComponent implements OnInit {
     fileReader.onloadend = () => {
       const file = fileReader.result;
 
-      resx.resx2js(file, (err, res) => {
+      resx.resx2js(file, true, (err, res) => {
         this.importingFile = false;
 
         if (err) {
